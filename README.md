@@ -6,3 +6,6 @@ Visit the [CNE Wiki](https://codename-engine.com/) to see all the uses for these
 
 
 Editing this because I want to promote my own CNE Template Generator, i never added a link because i forgor, here is [link](https://github.com/ItsLJcool/Codename-Template-Generator)
+
+# You place this in your Addons folder in Codename Engine
+> ./addons
