@@ -21,7 +21,7 @@ function postCreate() {
     add(osDropdown);
 
     continueButton = new UIButton(0, 0, "Continue", continueUpdate, winWidth*0.4, 50);
-    continueButton.x = winWidth - cancelButton.bWidth - 15;
+    continueButton.x = winWidth - continueButton.bWidth - 15;
     continueButton.y = osDropdown.y + osDropdown.bHeight + 50;
     add(continueButton);
 
