@@ -24,6 +24,8 @@ var needsUpdate = false;
 var args = [];
 
 function new() {
+    FlxG.save.data.autoUpdate ??= true;
+    FlxG.save.flush();
     var temp = [];
     for (arg in Sys.args()) {
         if (StringTools.startsWith(arg, "/")) temp.push('-'+arg.substr(1))

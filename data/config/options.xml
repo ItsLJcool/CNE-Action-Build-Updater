@@ -2,10 +2,4 @@
 
     <checkbox id="autoUpdate" name="Auto Check for Updates" />
 
-    <choice id="osChoice" name="Auto OS">
-        <value name="Windows" value="Windows"/>
-        <value name="MacOS" value="MacOS"/>
-        <value name="Linux" value="Linux"/>
-    </choice>
-
 </menu>

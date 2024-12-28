@@ -87,11 +87,13 @@ function create() {
 	doFormatting(commitText, commitMessage);
 	commitText.screenCenter();
 	commitText.y = titleCommit.y + titleCommit.height + 25;
-	addBackground(commitText, 8, (bgSprite:FlxSprite) -> {
-		bgSprite.alpha = 0.45;
-		if (bgSprite.height > FlxG.height + 5) needsScrolling = true;
-	});
-	add(commitText);
+	if (commitMessage.length > 0) {
+		addBackground(commitText, 8, (bgSprite:FlxSprite) -> {
+			bgSprite.alpha = 0.45;
+			if (bgSprite.height > FlxG.height + 5) needsScrolling = true;
+		});
+		add(commitText);
+	}
 
 	autoScroll();
 	funny_playSong();

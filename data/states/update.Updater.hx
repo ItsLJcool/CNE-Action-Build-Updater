@@ -86,7 +86,7 @@ function getZip() {
 var progressTimer:FlxTimer = new FlxTimer();
 function extractZip(daBytes) {
     done = true;
-    var path = Sys.getCwd() + ".temp/Codename Engine "+os+".zip";
+    var path = "./.temp/Codename Engine "+os+".zip";
     var size = CoolUtil.getSizeString(0);
     if (daBytes != null) {
         CoolUtil.safeSaveFile(path, daBytes);
