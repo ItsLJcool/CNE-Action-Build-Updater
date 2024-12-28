@@ -1,3 +1,6 @@
+> [!WARNING]
+> Currently only works on Windows, fixing the issue as of now.
+
 Hi! Thanks for using Codename Engine Template Mod Generator!
 
 This is a template mod that you can use to create your own mods. It contains all the files you need to get started.
