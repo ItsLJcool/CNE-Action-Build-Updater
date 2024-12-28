@@ -3,6 +3,7 @@
 > Though there are like 3 files that don't actually get copied over, thats because of the limitation of Flixel initalizing the game before my scripts can run.
 >
 > Window users can find the 3 files in the `./.cache/` folder (Turn on hidden files to see it)
+> 
 > When the game restarts, it will seem like it crashed, but its actually just automatically copying the files over and then it will restart the game again.
 
 Hi! Thanks for using Codename Engine Template Mod Generator!
