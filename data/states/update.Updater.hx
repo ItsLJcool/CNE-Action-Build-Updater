@@ -122,6 +122,7 @@ function extractZip(daBytes) {
         }, 0);
     #else
         completed();
+    #end
 }
 
 function completed() {
