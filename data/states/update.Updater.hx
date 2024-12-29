@@ -94,7 +94,7 @@ var progressTimer:FlxTimer = new FlxTimer();
 function extractZip(daBytes) {
     done = true;
     var path = "./.temp/Codename Engine "+os+".zip";
-    #if !windowsvar path = "./Action Build CodenameEngine for "+os+".zip"; #end
+    #if !windows var path = "./Action Build CodenameEngine for "+os+".zip"; #end
     var size = saveBytesToLocation(daBytes, path);
 
     #if windows
