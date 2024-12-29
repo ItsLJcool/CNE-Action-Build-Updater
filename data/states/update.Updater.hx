@@ -93,34 +93,34 @@ function saveBytesToLocation(daBytes, path:String) {
 var progressTimer:FlxTimer = new FlxTimer();
 function extractZip(daBytes) {
     done = true;
-    // var path = "./.temp/Codename Engine "+os+".zip";
-    /*#if !windows */var path = "./Action Build CodenameEngine for "+os+".zip"; /*#end*/
+    var path = "./.temp/Codename Engine "+os+".zip";
+    #if !windowsvar path = "./Action Build CodenameEngine for "+os+".zip"; #end
     var size = saveBytesToLocation(daBytes, path);
 
-    // #if windows
-    //     var progress = ZipUtil.uncompressZipAsync(ZipUtil.openZip(path), "./.cache/");
+    #if windows
+        var progress = ZipUtil.uncompressZipAsync(ZipUtil.openZip(path), "./.cache/");
 
-    //     var prev_percent = 0;
-    //     var showWhile:Bool = false;
-    //     progressTimer.start(0.5, (tmr) -> {
-    //         var loops = -tmr.loopsLeft;
-    //         var text = progressText;
-    //         text = StringTools.replace(text, "$percent", Std.string(FlxMath.roundDecimal(progress.percentage*100, 2))+"%");
-    //         text = StringTools.replace(text, "$files", Std.string(progress.curFile) + " / " + Std.string(progress.fileCount));
-    //         text = StringTools.replace(text, "$size", Std.string(size));
+        var prev_percent = 0;
+        var showWhile:Bool = false;
+        progressTimer.start(0.5, (tmr) -> {
+            var loops = -tmr.loopsLeft;
+            var text = progressText;
+            text = StringTools.replace(text, "$percent", Std.string(FlxMath.roundDecimal(progress.percentage*100, 2))+"%");
+            text = StringTools.replace(text, "$files", Std.string(progress.curFile) + " / " + Std.string(progress.fileCount));
+            text = StringTools.replace(text, "$size", Std.string(size));
 
-    //         if (prev_percent == progress.percentage && loops % 16 == 0) showWhile = true;
-    //         else if (prev_percent != progress.percentage) showWhile = false;
+            if (prev_percent == progress.percentage && loops % 16 == 0) showWhile = true;
+            else if (prev_percent != progress.percentage) showWhile = false;
 
-    //         if (showWhile) text += "\n\nTaking a while to extract, please wait...";
+            if (showWhile) text += "\n\nTaking a while to extract, please wait...";
 
-    //         timeSinceText.text = text;
-    //         timeSinceText.screenCenter();
+            timeSinceText.text = text;
+            timeSinceText.screenCenter();
 
-    //         prev_percent = progress.percentage;
-    //         if (progress.percentage == 1) completed();
-    //     }, 0);
-    // #else
+            prev_percent = progress.percentage;
+            if (progress.percentage == 1) completed();
+        }, 0);
+    #else
         completed();
 }
 
@@ -131,18 +131,18 @@ function completed() {
     FlxG?.sound?.music?.volume = 0;
     CoolUtil.playMenuSFX(1);
 
-    // #if windows
-    //     File.copy('CodenameEngine.exe', 'temp.exe');
-    //     fadeOut(() -> {
-    //         new Process('start /B temp.exe update', null);
-    //         Sys.exit(0);
-    //     });
-    // #else
+    #if windows
+        File.copy('CodenameEngine.exe', 'temp.exe');
+        fadeOut(() -> {
+            new Process('start /B temp.exe update', null);
+            Sys.exit(0);
+        });
+    #else
         canExit = true;
         timeSinceText.size -= 12;
         timeSinceText.text = "Downloaded!\n\nSince your not on windows, This Updater cannot extract the files from engine.\n\nPlease check your CodenameEngine folder for the downloaded compressed file.";
         timeSinceText.screenCenter();
-    // #end
+    #end
 }
 
 function fadeOut(callback:Void->Void) {
