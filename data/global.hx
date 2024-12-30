@@ -112,3 +112,29 @@ function update(elapsed:Float) {
     FlxG.sound.music.fadeOut(timeFadeOut, 0);
     new FlxTimer().start(timeFadeOut, funny_playSong); // onComplete was buggin for fade out, so force it anyways.
 }
+
+var prev_volume:Float = 0;
+var lostFocus:Bool = false;
+var stopVolume:Bool = true;
+
+var noFocusVolume = 0.2;
+function focusLost() {
+    if (FlxG.autoPause) return;
+    if (!FlxG?.sound?.music?.playing) return;
+    stopVolume = false;
+    lostFocus = true;
+    prev_volume = FlxG?.sound?.music?.volume;
+    FlxG?.sound?.music?.fadeOut(1, noFocusVolume);
+}
+
+function focusGained() {
+    if (FlxG.autoPause) return;
+    if (!FlxG?.sound?.music?.playing) return;
+    lostFocus = false;
+    FlxG?.sound?.music?.fadeIn(1, FlxG?.music?.sound?.volume ?? prev_volume, prev_volume);
+}
+
+function postUpdate(elapsed:Float) {
+    if (FlxG.autoPause) return;
+    if (FlxG?.sound?.music?.volume > noFocusVolume && lostFocus) FlxG?.sound?.music?.volume -= 0.5 * elapsed;
+}
