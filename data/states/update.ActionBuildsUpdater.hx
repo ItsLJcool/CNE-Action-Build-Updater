@@ -3,6 +3,7 @@ import flixel.text.FlxTextBorderStyle;
 import flixel.text.FlxTextFormatMarkerPair;
 import flixel.text.FlxTextFormat;
 import funkin.options.Options;
+import funkin.backend.utils.HttpUtil;
 
 import funkin.backend.system.Conductor;
 
@@ -13,11 +14,16 @@ import flixel.util.FlxGradient;
 import funkin.backend.MusicBeatState;
 import funkin.editors.ui.UISubstateWindow;
 import funkin.menus.BetaWarningState;
+import funkin.backend.scripting.MultiThreadedScript;
 
 import StringTools;
 
+var FileUtil = new MultiThreadedScript(Paths.script("data/scripts/FileUtil"), this);
+
 var titleCommit:FlxText;
 var commitText:FlxText;
+
+var commitAuthor:FlxSprite;
 
 var songTimeGradient:FlxSprite;
 
@@ -58,7 +64,7 @@ function create() {
 	bg.alpha = 0.65;
 	add(bg);
 
-	songTimeGradient = FlxGradient.createGradientFlxSprite(FlxG.width + 5, 20, colors, 1, 0, true);
+	songTimeGradient = FlxGradient.createGradientFlxSprite(FlxG.width + 5, 20, colors, 1, 180, true);
 	songTimeGradient.scrollFactor.set();
 	songTimeGradient.y = FlxG.height - songTimeGradient.height;
 	var width = songTimeGradient.width;
@@ -78,9 +84,29 @@ function create() {
 	titleCommit.antialiasing = true;
 	doFormatting(titleCommit, commitTitle);
 	titleCommit.screenCenter();
-	titleCommit.y = 25;
-	addBackground(titleCommit, 10, (bgSprite:FlxSprite) -> bgSprite.alpha = 0.45);
-	add(titleCommit);
+	titleCommit.y = 45;
+	titleCommit.scrollFactor.set();
+	
+	commitAuthor = new FlxSprite(0, 0).makeSolid(100, 100, 0xFF000000);
+	commitAuthor.setGraphicSize(100, 100);
+	commitAuthor.updateHitbox();
+	commitAuthor.setPosition(titleCommit.x - commitAuthor.width - 15, titleCommit.y + titleCommit.height * 0.5 - commitAuthor.height * 0.5);
+	commitAuthor.shader = new CustomShader("update.circleProfilePicture");
+	commitAuthor.scrollFactor.set();
+	commitAuthor.onDraw = (spr:FlxSprite) -> {
+		spr.alpha = (FlxG.mouse.overlaps(spr) ? 0.85 : 1);
+		spr.draw();
+		if (FlxG.mouse.overlaps(spr) && FlxG.mouse.justPressed && updater_data.commit.author.html_url != null) {
+			CoolUtil.openURL(updater_data.commit.author.html_url);
+		}
+	};
+
+	FileUtil.call("loadImageFromUrl", [updater_data.commit.author.avatar_url, (bitmap) -> {
+		commitAuthor.loadGraphic(bitmap);
+		commitAuthor.setGraphicSize(100, 100);
+		commitAuthor.updateHitbox();
+		commitAuthor.setPosition(titleCommit.x - commitAuthor.width - 15, titleCommit.y + titleCommit.height * 0.5 - commitAuthor.height * 0.5);
+	}]);
 
 	commitText = new FlxText(0, 0, 0, "no message :(", 24);
 	commitText.antialiasing = true;
@@ -94,6 +120,12 @@ function create() {
 		});
 		add(commitText);
 	}
+	addBackground(titleCommit, 10, (bgSprite:FlxSprite) -> {
+		bgSprite.scrollFactor.set();
+		bgSprite.alpha = 0.45;
+	});
+	add(commitAuthor);
+	add(titleCommit);
 
 	autoScroll();
 	funny_playSong();
@@ -133,7 +165,11 @@ function create() {
 }
 
 function update(elapsed:Float) {
-	if (FlxG.keys.justPressed.ENTER) openSubState(new UISubstateWindow(true, "update.ChooseOS"));
+	if (FlxG.keys.justPressed.ENTER) {
+		// openSubState(new UISubstateWindow(true, "update.ChooseOS"));
+		var os = #if windows "windows" #elseif mac "macos" #elseif linux "linux" #end;
+		updateActionBuild(os);
+	}
 	if (FlxG.keys.justPressed.SPACE && updater_data._links != null) CoolUtil.openURL(updater_data._links.html);
 	if (controls.BACK) {
 		stopPlayingSong = true;
@@ -151,9 +187,7 @@ function updateActionBuild(os:String) {
 	trace("OS: " + os);
 	var os = os.toLowerCase();
 	MusicBeatState.skipTransOut = MusicBeatState.skipTransIn = true;
-	new FlxTimer().start(0.125, () -> {
-		FlxG.switchState(new ModState("update.Updater", {os: os}));
-	});
+	new FlxTimer().start(0.125, () -> FlxG.switchState(new ModState("update.Updater", {os: os})));
 }
 
 function autoScroll() {

@@ -1,4 +1,5 @@
 //a
+import haxe.Timer;
 import flixel.text.FlxTextBorderStyle;
 import flixel.text.FlxTextFormatMarkerPair;
 import flixel.text.FlxTextFormat;
@@ -16,17 +17,21 @@ import funkin.backend.system.Main;
 
 import funkin.backend.utils.ZipUtil;
 import funkin.backend.utils.HttpUtil;
-import sys.Http;
+import openfl.utils.ByteArrayData;
+import funkin.backend.scripting.MultiThreadedScript;
+
 import sys.Sys;
 
 import StringTools;
 import Type;
 
-var os = data.os ?? "windows";
+var CustomHttpUtil = new MultiThreadedScript(Paths.script("data/scripts/HttpUtil"), this);
+
+var os = Std.string(data.os) ?? "windows";
 var link = "https://nightly.link/CodenameCrew/CodenameEngine/workflows/"+os+"/main/Codename%20Engine.zip";
 
 var timeSinceText:FlxText;
-var timeText = "Seconds since downloading:\n";
+var timeText = "Prearing to download...";
 var progressText = "Progress:\n$percent\n\nFiles:\n$files\n\nSize:\n$size";
 function create() {
     link = StringTools.replace(link, " ", "%20");
@@ -45,7 +50,7 @@ function create() {
 	bg.alpha = 0.65;
 	add(bg);
 
-    timeSinceText = new FlxText(0, 0, FlxG.width * 0.5, "Seconds since downloading:\n0", 48);
+    timeSinceText = new FlxText(0, 0, FlxG.width * 0.5, timeText, 48);
 	timeSinceText.setFormat(Paths.font("Funkin'.ttf"), timeSinceText.size, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
     timeSinceText.borderSize = 3;
 	timeSinceText.screenCenter();
@@ -57,32 +62,53 @@ function create() {
 }
 
 
-var done = true;
 var canExit = true;
-var timeSince:Float = 0;
 function update(elapsed:Float) {
     if (controls.BACK && canExit) FlxG.switchState(new UIState(true, "update.ActionBuildsUpdater"));
-
-    if (!done) {
-        timeSince += elapsed;
-        timeSinceText.text = timeText + Math.floor(timeSince);
-        timeSinceText.screenCenter();
-        if (bytes == null) return;
-        done = true;
-        extractZip(bytes);
-    }
 }
-
-var bytes = null;
+function customReduce(arr, initial, callback) {
+    var accumulator = initial;
+    for (item in arr) accumulator = callback(accumulator, item);
+    return accumulator;
+}
 function getZip() {
     canExit = false;
-    done = false;
-    timeSince = 0;
     
-    Main.execAsync(() -> {
+    #if !ALLOW_MULTITHREADING
+        trace("L - Also not tested lmao");
         bytes = HttpUtil.requestBytes(link);
-    });
+        extractZip(bytes);
+        return;
+    #end
     
+    var lastProgressTime = 0;
+    var pingList = [];
+    var pingMaxSize = 50;
+    CustomHttpUtil.call("requestZip", [link, (e, percent) -> {
+        var currentTime = Timer.stamp();
+        var interval = (currentTime - lastProgressTime) * 1000; // Convert to milliseconds
+    
+        // Collect intervals to calculate average ping
+        pingList.push(interval);
+        if (pingList.length > pingMaxSize) pingList.shift();
+    
+        // Calculate the average ping using customReduce
+        var totalPing = customReduce(pingList, 0.0, (sum, value) -> sum + value);
+        var averagePing = Std.int(totalPing / pingList.length);
+    
+        lastProgressTime = currentTime;
+
+        var totalBytes = event.bytesTotal;
+        var receivedBytes = event.bytesLoaded;
+        timeSinceText.text = "Downloading...\n"+Std.int(percent*100)+"%";
+        if (pingList.length > (pingMaxSize - 10)) timeSinceText.text += "\n\nAverage ping: " + averagePing + "ms";
+        timeSinceText.screenCenter();
+    }, (e, loader) -> {
+        var data = new ByteArrayData();
+        loader.data.readBytes(data, 0, loader.data.length - loader.data.position);
+
+        extractZip(data);
+    }]);
 }
 
 function saveBytesToLocation(daBytes, path:String) {
@@ -92,10 +118,16 @@ function saveBytesToLocation(daBytes, path:String) {
 
 var progressTimer:FlxTimer = new FlxTimer();
 function extractZip(daBytes) {
-    done = true;
     var path = "./.temp/Codename Engine "+os+".zip";
     #if !windows var path = "./Action Build CodenameEngine for "+os+".zip"; #end
     var size = saveBytesToLocation(daBytes, path);
+
+    #if !ALLOW_MULTITHREADING
+        completed();
+        timeSinceText.text = "No multithreading, check your CodenameEngine.exe folder for the .zip file.";
+        timeSinceText.screenCenter();
+        return;
+    #end
 
     #if windows
         var progress = ZipUtil.uncompressZipAsync(ZipUtil.openZip(path), "./.cache/");
@@ -152,4 +184,12 @@ function fadeOut(callback:Void->Void) {
     fader.alpha = 0.0001;
     add(fader);
     FlxTween.tween(fader, {alpha: 1}, 0.75, {startDelay: 1.5, ease: FlxEase.quadInOut, onComplete: callback});
+}
+
+function onStateSwitch() {
+    CustomHttpUtil.destroy();
+}
+
+function destroy() {
+    CustomHttpUtil.destroy();
 }
