@@ -135,6 +135,11 @@ function extractZip(daBytes) {
         var prev_percent = 0;
         var showWhile:Bool = false;
         progressTimer.start(0.5, (tmr) -> {
+            if (progress.fileCount == 0) {
+                timeSinceText.text = "Preping Extraction...";
+                timeSinceText.screenCenter();
+                return;
+            }
             var loops = -tmr.loopsLeft;
             var text = progressText;
             text = StringTools.replace(text, "$percent", Std.string(FlxMath.roundDecimal(progress.percentage*100, 2))+"%");
