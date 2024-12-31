@@ -16,6 +16,8 @@ import funkin.backend.utils.NativeAPI;
 import funkin.backend.utils.NativeAPI.FileAttribute;
 import funkin.backend.utils.FileAttribute;
 
+import funkin.options.OptionsMenu;
+
 import Sys;
 import Type;
 import StringTools;
@@ -26,6 +28,11 @@ var moveFiles = false;
 var args = [];
 
 function new() {
+    // OptionsMenu.mainOptions.push({
+    //     name: 'Auto Action Updater >',
+    //     desc: 'Settings for the Auto Action Updater',
+    //     state: new OptionsScreen(name, desc, parseOptionsFromXML(node))
+    // });
     FlxG.save.data.autoUpdate ??= true;
     FlxG.save.flush();
     var temp = [];
@@ -42,12 +49,12 @@ function new() {
     CoolUtil.deleteFolder('./.cache');
     CoolUtil.safeAddAttributes('./.cache/', FileAttribute.HIDDEN); // 0x2
     if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
-    if (FlxG.save.data.autoUpdate) doCheck();
+    if (FlxG.save.data.autoUpdate) needsUpdate = checkActionUpdates();
 }
 
 static var updater_currentGithubHash = null;
 static var updater_data = null;
-function doCheck() {
+static function checkActionUpdates() {
     var http = null;
     try {
         http = Json.parse(HttpUtil.requestText(url));
@@ -55,8 +62,8 @@ function doCheck() {
         currentGithubHash = http.commit.sha;
     } catch(e:Error) { trace("Failed to get current github hash"); }
     trace("checking...");
-    if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return;
-    needsUpdate = true;
+    if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
+    return true;
 }
 
 function preStateSwitch() {
@@ -78,7 +85,7 @@ function preStateSwitch() {
 
 
 function destroy() {
-    stopPlayingSong = funny_playSong = updater_data = updater_currentGithubHash = null;
+    stopPlayingSong = funny_playSong = updater_data = updater_currentGithubHash = checkActionUpdates = null;
 }
 
 var allSongs = Paths.getFolderContent("music/updateMusic");

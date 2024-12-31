@@ -1,5 +1,0 @@
-<menu name="Action Builds Updater" desc="Change settings for the Action Builds Updater">
-
-    <checkbox id="autoUpdate" name="Auto Check for Updates" />
-
-</menu>
