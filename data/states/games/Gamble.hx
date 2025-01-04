@@ -21,7 +21,27 @@ function create() {
         gambel.animation.addByPrefix('gambling', 'aw danging', 24, false);
         gambel.animation.play('idle');
         gambel.scrollFactor.set();
+        gambel.animation.finishCallback = () -> {
+                new FlxTimer().start(0.25, (timer) -> {
+                        canClick = true;
+                });
+                gambel.animation.play('idle');
+        };
+        gambel.onDraw = (spr) -> {
+                var overlaps = FlxG.mouse.overlaps(spr);
+                if (overlaps && FlxG.mouse.pressed && canClick) {
+                        canClick = false;
+                        sound.play();
+                        spr.animation.play('gambling');
+                }
+                var _alpha = (overlaps && canClick) ? 0.6 : 1;
+                spr.alpha = FlxMath.lerp(spr.alpha, _alpha, FlxG.elapsed*5);
+                spr.draw();
+        };
+        gambel.scale.set(0.8, 0.8);
+        gambel.updateHitbox();
         gambel.screenCenter();
+        gambel.alpha = 0.0001;
         add(gambel);
 }
 
@@ -29,16 +49,5 @@ function update(elapsed:Float) {
         if (controls.BACK) {
                 FlxG.state.stateScripts.call("onCloseSubState");
                 close();
-        }
-
-        if (FlxG.mouse.overlaps(gambel) && FlxG.mouse.pressed && canClick) {
-                canClick = false;
-                sound.play();
-                gambel.animation.play('gambling');
-        }
-
-        if (gambel.animation.name == "gambling" && gambel.animation.finished) {
-                canClick = true;
-                gambel.animation.play('idle');
         }
 }

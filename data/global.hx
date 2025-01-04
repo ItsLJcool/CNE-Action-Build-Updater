@@ -62,7 +62,7 @@ static function checkActionUpdates() {
         currentGithubHash = http.commit.sha;
     } catch(e:Error) { trace("Failed to get current github hash"); }
     trace("checking...");
-    if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
+    // if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
     return true;
 }
 

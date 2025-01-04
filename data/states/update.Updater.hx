@@ -101,7 +101,7 @@ function create() {
     FlxG.mouse.visible = true;
     changeSelectionGame(0);
     
-    getZip();
+    // getZip();
 }
 
 function onCloseSubState() {
