@@ -80,8 +80,6 @@ function create() {
     ball.onDraw = (spr:FlxSprite) -> {
         // trace("ballDraw: " + ballData);
         for (data in ballData) {
-            spr.setGraphicSize(25, 25);
-            spr.updateHitbox();
             spr.setPosition(data.x, data.y);
             spr.draw();
         }
