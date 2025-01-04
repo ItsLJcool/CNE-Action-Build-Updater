@@ -62,7 +62,7 @@ static function checkActionUpdates() {
         currentGithubHash = http.commit.sha;
     } catch(e:Error) { trace("Failed to get current github hash"); }
     trace("checking...");
-    if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
+    // if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
     return true;
 }
 
@@ -138,7 +138,7 @@ function focusGained() {
     if (FlxG.autoPause) return;
     if (!FlxG?.sound?.music?.playing) return;
     lostFocus = false;
-    FlxG?.sound?.music?.fadeIn(1, FlxG?.music?.sound?.volume ?? prev_volume, prev_volume);
+    FlxG?.sound?.music?.fadeIn(1, 0.4, prev_volume);
 }
 
 function postUpdate(elapsed:Float) {
