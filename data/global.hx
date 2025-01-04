@@ -62,7 +62,7 @@ static function checkActionUpdates() {
         currentGithubHash = http.commit.sha;
     } catch(e:Error) { trace("Failed to get current github hash"); }
     trace("checking...");
-    if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
+    // if (currentGithubHash == null || StringTools.startsWith(currentGithubHash, GitCommitMacro.commitHash)) return false;
     return true;
 }
 
@@ -101,12 +101,12 @@ var time = -1;
 var lastRandomInt:Int = -1;
 public static function funny_playSong() {
     if (stopPlayingSong) return;
-	Conductor.reset();
+    
     var ary = (lastRandomInt == -1) ? [] : [lastRandomInt];
     var rngInt = lastRandomInt = FlxG.random.int(0, allSongs.length-1, ary);
 	var randomSong = allSongs[rngInt];
-	FlxG.sound.playMusic(Paths.music("updateMusic/"+randomSong), 0, false);
-	FlxG.sound.music.fadeIn(0.25, 0, 0.4);
+    FlxG.sound.playMusic(Paths.music("updateMusic/"+randomSong), 0.4, false);
+    FlxG.sound.volume = 0.4;
     time = 0;
 }
 
@@ -115,8 +115,8 @@ function update(elapsed:Float) {
     if (time < 0 && !stopPlayingSong) return;
     time = FlxG.sound.music.time*0.001;
     if (time <= (FlxG.sound.music.length*0.001 - timeFadeOut)) return;
+    // trace("FADE OUT!!!!");
     time = -1;
-    FlxG.sound.music.fadeOut(timeFadeOut, 0);
     new FlxTimer().start(timeFadeOut, funny_playSong); // onComplete was buggin for fade out, so force it anyways.
 }
 

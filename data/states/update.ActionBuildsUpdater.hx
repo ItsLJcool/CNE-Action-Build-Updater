@@ -80,7 +80,7 @@ function create() {
 	};
     add(songTimeGradient);
 
-	titleCommit = new FlxText(0, 0, 0, "erm not peak", 28);
+	titleCommit = new FlxText(0, 0, FlxG.width * 0.8, "erm not peak", 28);
 	titleCommit.antialiasing = true;
 	doFormatting(titleCommit, commitTitle);
 	titleCommit.screenCenter();
@@ -127,8 +127,7 @@ function create() {
 	add(commitAuthor);
 	add(titleCommit);
 
-	autoScroll();
-	funny_playSong();
+	if (FlxG.sound.music == null) funny_playSong();
 
 	var anims = [
 		"backspace to skip",

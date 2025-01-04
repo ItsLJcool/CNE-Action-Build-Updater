@@ -24,6 +24,18 @@ import sys.Sys;
 
 import StringTools;
 import Type;
+import haxe.io.Path;
+
+var allGames = Paths.getFolderContent("data/states/games");
+var temp = [];
+for (song in allGames) temp.push(Path.withoutExtension(song));
+allGames = temp;
+
+// openSubState(new ModSubState(randomGame()));
+function randomGame() {
+    var game = allGames[FlxG.random.int(0, allGames.length-1)];
+    return "games/"+game;
+}
 
 var CustomHttpUtil = new MultiThreadedScript(Paths.script("data/scripts/HttpUtil"), this);
 
@@ -55,17 +67,91 @@ function create() {
     timeSinceText.borderSize = 3;
 	timeSinceText.screenCenter();
     add(timeSinceText);
+
+    gamesText = new FlxText(0, 0, 0, "Games >", 32);
+	gamesText.setFormat(Paths.font("Funkin'.ttf"), gamesText.size, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    gamesText.borderSize = 3;
+    gamesText.setPosition(FlxG.width - gamesText.width - 25, FlxG.height - gamesText.height - 15);
+
+    gamesListBG = new FlxSprite().makeGraphic(gamesText.width + 150, FlxG.height, 0xFF000000);
+    gamesListBG.alpha = 0.25;
+    add(gamesListBG);
+
+    var peakText = allGames.join("\n");
+    gameTextList = new FlxText(0, 15, gamesListBG.width, peakText, 32);
+	gameTextList.setFormat(Paths.font("Funkin'.ttf"), gameTextList.size, FlxColor.WHITE, "right", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    gameTextList.borderSize = 3;
+    add(gameTextList);
+
+    var back = CoolUtil.keyToString(Options.P1_BACK[0]);
+    var back2 = CoolUtil.keyToString(Options.P2_BACK[0]);
+    if (back == "[←]") back = "Backspace";
+    var controlText = "Controls:\nSelect Game - "+CoolUtil.keyToString(Options.P1_ACCEPT[0])
+    +"\nChange Selection - "+CoolUtil.keyToString(Options.P1_UP[0])+" / "+CoolUtil.keyToString(Options.P1_DOWN[0])
+    +"\nLeave Game - "+back+" ("+back2+")";
+    theExplainer = new FlxText(0, 0, 0, controlText, 28);
+	theExplainer.setFormat(Paths.font("Funkin'.ttf"), theExplainer.size, FlxColor.WHITE, "right", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    theExplainer.borderSize = 3;
+    theExplainer.setPosition(gamesListBG.x - theExplainer.width - 15, FlxG.height - theExplainer.height - 15);
+    add(theExplainer);
+    gamesListBG.setPosition(FlxG.width + gamesListBG.width + theExplainer.width + 15, 0);
+
+    add(gamesText);
+
+    FlxG.mouse.visible = true;
+    changeSelectionGame(0);
     
-    getZip();
-    // FlxG?.sound?.music?.volume = 1;
-    // FlxG?.sound?.music?.fadeOut(1, 0, completed);
+    // getZip();
 }
 
+function onCloseSubState() {
+    enteredGame = false;
+    canChangeSelection = true;
+}
 
 var canExit = true;
 function update(elapsed:Float) {
+
+    if (!enteredGame) canSelectGame = (FlxG.mouse.x > gamesText.x || FlxG.mouse.x > gamesListBG.x);
+    if (canSelectGame) {
+        gamesListBG.x = FlxMath.lerp(gamesListBG.x, FlxG.width - gamesListBG.width, elapsed * 10);
+    } else gamesListBG.x = FlxMath.lerp(gamesListBG.x, FlxG.width + gamesListBG.width + theExplainer.width + 15, elapsed * 10);
+    gameTextList.x = gamesListBG.x - 10;
+    theExplainer.setPosition(gamesListBG.x - theExplainer.width - 15, FlxG.height - theExplainer.height - 15);
+    gamesText.alpha = FlxMath.lerp(gamesText.alpha, (!canSelectGame) ? 1 : 0.6, elapsed * 5);
+
     if (controls.BACK && canExit) FlxG.switchState(new UIState(true, "update.ActionBuildsUpdater"));
+    if (controls.ACCEPT && canSelectGame) enterGame();
+
+    if (controls.UP_P || controls.DOWN_P) changeSelectionGame(controls.UP_P ? -1 : 1);
 }
+
+var selectedGame:Int = 0;
+var canSelectGame = false;
+var canChangeSelection = true;
+function changeSelectionGame(amt:Int) {
+    if (!canChangeSelection) return;
+    selectedGame += amt;
+
+    var max = allGames.length;
+    if (selectedGame < 0) selectedGame = max - 1;
+    if (selectedGame >= max) selectedGame = 0;
+
+    var shallowCopy = allGames.copy();
+    shallowCopy[selectedGame] = ">     " + shallowCopy[selectedGame];
+    var peakText = shallowCopy.join("\n");
+    gameTextList.text = peakText;
+}
+
+var enteredGame:Bool = false;
+function enterGame() {
+    enteredGame = true;
+    canChangeSelection = canSelectGame = false;
+    var game = allGames[selectedGame];
+    openSubState(new ModSubState("games/"+game));
+}
+
+
 function customReduce(arr, initial, callback) {
     var accumulator = initial;
     for (item in arr) accumulator = callback(accumulator, item);
