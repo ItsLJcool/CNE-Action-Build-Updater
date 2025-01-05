@@ -111,11 +111,10 @@ public static function funny_playSong() {
 }
 
 function update(elapsed:Float) {
-    if (FlxG.sound.music == null) return;
+    if (FlxG.sound.music == null || !needsUpdate) return;
     if (time < 0 && !stopPlayingSong) return;
     time = FlxG.sound.music.time*0.001;
     if (time <= (FlxG.sound.music.length*0.001 - timeFadeOut)) return;
-    // trace("FADE OUT!!!!");
     time = -1;
     new FlxTimer().start(timeFadeOut, funny_playSong); // onComplete was buggin for fade out, so force it anyways.
 }
