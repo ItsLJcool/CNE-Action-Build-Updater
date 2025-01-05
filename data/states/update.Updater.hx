@@ -109,7 +109,7 @@ function onCloseSubState() {
     canChangeSelection = true;
 }
 
-var canExit = true;
+var canExit = false;
 function update(elapsed:Float) {
 
     if (!enteredGame) canSelectGame = (FlxG.mouse.x > gamesText.x || FlxG.mouse.x > gamesListBG.x);
