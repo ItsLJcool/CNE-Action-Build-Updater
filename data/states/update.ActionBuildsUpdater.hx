@@ -172,7 +172,6 @@ function update(elapsed:Float) {
 	if (FlxG.keys.justPressed.SPACE && updater_data._links != null) CoolUtil.openURL(updater_data._links.html);
 	if (controls.BACK) {
 		stopPlayingSong = true;
-		FlxG?.sound?.music?.fadeOut(0.2, 0);
 		new FlxTimer().start(0.2, () -> {
 			FlxG.sound.music.destroy();
 			FlxG.sound.music = null;
