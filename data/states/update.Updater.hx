@@ -38,7 +38,7 @@ function randomGame() {
 }
 
 var CustomHttpUtil = new MultiThreadedScript(Paths.script("data/scripts/HttpUtil"), this);
-
+if (data == null) data = {};
 var os = Std.string(data.os) ?? "windows";
 var link = "https://nightly.link/CodenameCrew/CodenameEngine/workflows/"+os+"/main/Codename%20Engine.zip";
 
