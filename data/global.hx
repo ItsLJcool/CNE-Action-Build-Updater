@@ -66,20 +66,20 @@ static function checkActionUpdates() {
     return true;
 }
 
+var switchedToUpdater = false;
 function preStateSwitch() {
     stopPlayingSong = false;
     if (moveFiles) {
         FlxG.game._requestedState = new ModState("update.MovingFiles");
         return;
     }
-    if (!needsUpdate) return;
+    if (!needsUpdate || switchedToUpdater) return;
     if (!(FlxG.game._requestedState is BetaWarningState)) return;
     
     FlxG.save.data.autoUpdate ??= true;
-    FlxG.save.data.osChoice ??= "Windows";
     FlxG.save.flush();
+    switchedToUpdater = true;
 
-    needsUpdate = false;
     FlxG.game._requestedState = new UIState(true, "update.ActionBuildsUpdater");
 }
 
@@ -95,7 +95,6 @@ allSongs = temp;
 
 public static var stopPlayingSong = false;
 
-var timeFadeOut = 5;
 var time = -1;
 
 var lastRandomInt:Int = -1;
@@ -111,12 +110,12 @@ public static function funny_playSong() {
 }
 
 function update(elapsed:Float) {
-    if (FlxG.sound.music == null || !needsUpdate) return;
+    if (FlxG.sound.music == null) return;
     if (time < 0 && !stopPlayingSong) return;
     time = FlxG.sound.music.time*0.001;
-    if (time <= (FlxG.sound.music.length*0.001 - timeFadeOut)) return;
+    if (time <= FlxG.sound.music.length*0.001 - 0.05) return;
     time = -1;
-    new FlxTimer().start(timeFadeOut, funny_playSong); // onComplete was buggin for fade out, so force it anyways.
+    funny_playSong();
 }
 
 var prev_volume:Float = 0;
