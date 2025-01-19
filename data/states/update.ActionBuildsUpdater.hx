@@ -47,7 +47,7 @@ function create() {
 	
 	var commitMessage = splitLol.join("\n");
 	// commitMessage = "LALALALALALALA\n";
-	// for (i in 0...40) commitMessage += "LALALALALALALA\n";
+	// for (i in 0...99999) commitMessage += "LALALALALALALA\n";
 	 
 	var colors = [0xff7b3088, 0xff431b53];
     bgGradient = FlxGradient.createGradientFlxSprite(FlxG.width + 5, FlxG.height + 5, colors, 1, 90, true);
@@ -69,7 +69,7 @@ function create() {
 	songTimeGradient.y = FlxG.height - songTimeGradient.height;
 	var width = songTimeGradient.width;
 	songTimeGradient.onDraw = (spr:FlxSprite) -> {
-		spr.x = FlxMath.lerp(-spr.width, 0, Conductor.songPosition/FlxG?.sound?.music?.length);
+		spr.x = FlxMath.lerp(-spr.width, 0, Conductor.songPosition/FlxG.sound.music?.length);
 		spr.color = 0xFF000000;
 		spr.setGraphicSize(spr.width+8, spr.height+8);
 		spr.draw();
@@ -112,6 +112,7 @@ function create() {
 	commitText.antialiasing = true;
 	doFormatting(commitText, commitMessage);
 	commitText.screenCenter();
+	if (commitMessage.fieldWidth > FlxG.width * 0.45) commitMessage.fieldWidth = FlxG.width * 0.45;
 	commitText.y = titleCommit.y + titleCommit.height + 25;
 	if (commitMessage.length > 0) {
 		addBackground(commitText, 8, (bgSprite:FlxSprite) -> {
@@ -161,6 +162,8 @@ function create() {
 		placeholderThings.push(phIg);
 		
 	}
+
+	autoScroll();
 }
 
 function update(elapsed:Float) {

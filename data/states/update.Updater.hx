@@ -252,7 +252,7 @@ function completed() {
     progressTimer.cancel();
     stopPlayingSong = true;
 
-    FlxG?.sound?.music?.volume = 0;
+    FlxG.sound.music?.volume = 0;
     CoolUtil.playMenuSFX(1);
 
     #if windows

@@ -125,21 +125,21 @@ var stopVolume:Bool = true;
 var noFocusVolume = 0.2;
 function focusLost() {
     if (FlxG.autoPause) return;
-    if (!FlxG?.sound?.music?.playing) return;
+    if (!FlxG.sound.music?.playing) return;
     stopVolume = false;
     lostFocus = true;
-    prev_volume = FlxG?.sound?.music?.volume;
-    FlxG?.sound?.music?.fadeOut(1, noFocusVolume);
+    prev_volume = FlxG.sound.music?.volume;
+    FlxG.sound.music?.fadeOut(1, noFocusVolume);
 }
 
 function focusGained() {
     if (FlxG.autoPause) return;
-    if (!FlxG?.sound?.music?.playing) return;
+    if (!FlxG.sound.music?.playing) return;
     lostFocus = false;
-    FlxG?.sound?.music?.fadeIn(1, 0.4, prev_volume);
+    FlxG.sound.music?.fadeIn(1, 0.4, prev_volume);
 }
 
 function postUpdate(elapsed:Float) {
     if (FlxG.autoPause) return;
-    if (FlxG?.sound?.music?.volume > noFocusVolume && lostFocus) FlxG?.sound?.music?.volume -= 0.5 * elapsed;
+    if (FlxG.sound.music?.volume > noFocusVolume && lostFocus) FlxG.sound.music?.volume -= 0.5 * elapsed;
 }
