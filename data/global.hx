@@ -93,7 +93,7 @@ var temp = [];
 for (song in allSongs) temp.push(Path.withoutExtension(song));
 allSongs = temp;
 
-public static var updater_stopPlayingSong = false;
+public static var updater_stopPlayingSong = true;
 
 var time = -1;
 
