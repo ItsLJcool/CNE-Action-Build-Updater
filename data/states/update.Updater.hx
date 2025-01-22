@@ -250,7 +250,7 @@ function extractZip(daBytes) {
 
 function completed() {
     progressTimer.cancel();
-    stopPlayingSong = true;
+    updater_stopPlayingSong = true;
 
     FlxG.sound.music?.volume = 0;
     CoolUtil.playMenuSFX(1);

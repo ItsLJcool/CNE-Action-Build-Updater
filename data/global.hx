@@ -68,13 +68,13 @@ static function checkActionUpdates() {
 
 var switchedToUpdater = false;
 function preStateSwitch() {
-    stopPlayingSong = false;
     if (moveFiles) {
         FlxG.game._requestedState = new ModState("update.MovingFiles");
         return;
     }
     if (!needsUpdate || switchedToUpdater) return;
     if (!(FlxG.game._requestedState is BetaWarningState)) return;
+    updater_stopPlayingSong = false;
     
     FlxG.save.data.autoUpdate ??= true;
     FlxG.save.flush();
@@ -85,7 +85,7 @@ function preStateSwitch() {
 
 
 function destroy() {
-    stopPlayingSong = funny_playSong = updater_data = updater_currentGithubHash = checkActionUpdates = null;
+    updater_stopPlayingSong = funny_playSong = updater_data = updater_currentGithubHash = checkActionUpdates = null;
 }
 
 var allSongs = Paths.getFolderContent("music/updateMusic");
@@ -93,13 +93,13 @@ var temp = [];
 for (song in allSongs) temp.push(Path.withoutExtension(song));
 allSongs = temp;
 
-public static var stopPlayingSong = false;
+public static var updater_stopPlayingSong = false;
 
 var time = -1;
 
 var lastRandomInt:Int = -1;
 public static function funny_playSong() {
-    if (stopPlayingSong) return;
+    if (updater_stopPlayingSong) return;
     
     var ary = (lastRandomInt == -1) ? [] : [lastRandomInt];
     var rngInt = lastRandomInt = FlxG.random.int(0, allSongs.length-1, ary);
@@ -111,7 +111,7 @@ public static function funny_playSong() {
 
 function update(elapsed:Float) {
     if (FlxG.sound.music == null) return;
-    if (time < 0 && !stopPlayingSong) return;
+    if (time < 0 && !updater_stopPlayingSong) return;
     time = FlxG.sound.music.time*0.001;
     if (time <= FlxG.sound.music.length*0.001 - 0.05) return;
     time = -1;

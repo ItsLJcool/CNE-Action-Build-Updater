@@ -30,6 +30,7 @@ var songTimeGradient:FlxSprite;
 var needsScrolling:Bool = false;
 var placeholderThings = [];
 function create() {
+    updater_stopPlayingSong = true;
 	FlxG.autoPause = false;
 
 	var splitLol = updater_data.commit.commit.message.split("\n\n");
@@ -174,7 +175,7 @@ function update(elapsed:Float) {
 	}
 	if (FlxG.keys.justPressed.SPACE && updater_data._links != null) CoolUtil.openURL(updater_data._links.html);
 	if (controls.BACK) {
-		stopPlayingSong = true;
+		updater_stopPlayingSong = true;
 		new FlxTimer().start(0.2, () -> {
 			FlxG.sound.music.destroy();
 			FlxG.sound.music = null;
