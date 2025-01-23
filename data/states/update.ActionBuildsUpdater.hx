@@ -30,7 +30,6 @@ var songTimeGradient:FlxSprite;
 var needsScrolling:Bool = false;
 var placeholderThings = [];
 function create() {
-    updater_stopPlayingSong = true;
 	FlxG.autoPause = false;
 
 	var splitLol = updater_data.commit.commit.message.split("\n\n");
