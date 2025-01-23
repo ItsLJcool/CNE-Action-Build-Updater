@@ -263,13 +263,18 @@ function frenzy() {
         remove(frenzyText, true);
     }});
 
-    new FlxTimer().start(0.25, () -> {
+    var amountToSpawn = FlxG.random.int(8, 15);
+    // var amountToSpawn = 9999999999999999999;
+
+    var timeToSpawn = 0.25;
+    // var timeToSpawn = 0.02;
+    new FlxTimer().start(timeToSpawn, () -> {
         if (!timer.active) {
             checkFrenzy = true;
             return;
         }
         addBall();
-    }, FlxG.random.int(8, 15));
+    }, amountToSpawn);
 
     
     for (spr in [leftSide, rightSide]) updateBarSize(spr.height + 50);
