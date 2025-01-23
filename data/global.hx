@@ -105,7 +105,6 @@ public static function funny_playSong() {
     var rngInt = lastRandomInt = FlxG.random.int(0, allSongs.length-1, ary);
 	var randomSong = allSongs[rngInt];
     FlxG.sound.playMusic(Paths.music("updateMusic/"+randomSong), 0.4, false);
-    FlxG.sound.volume = 0.4;
     time = 0;
 }
 
