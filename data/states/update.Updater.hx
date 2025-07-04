@@ -43,7 +43,7 @@ var os = Std.string(data.os) ?? "windows";
 var link = "https://nightly.link/CodenameCrew/CodenameEngine/workflows/"+os+"/main/Codename%20Engine.zip";
 
 var timeSinceText:FlxText;
-var timeText = "Prearing to download...";
+var timeText = "Preparing to download...";
 var progressText = "Progress:\n$percent\n\nFiles:\n$files\n\nSize:\n$size";
 function create() {
     link = StringTools.replace(link, " ", "%20");
