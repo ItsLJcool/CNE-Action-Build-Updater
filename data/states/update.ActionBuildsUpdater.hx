@@ -19,6 +19,8 @@ import funkin.backend.scripting.MultiThreadedScript;
 import StringTools;
 
 var FileUtil = new MultiThreadedScript(Paths.script("data/scripts/FileUtil"), this);
+importScript("data/scripts/FileUtil");
+
 
 var titleCommit:FlxText;
 var commitText:FlxText;
